@@ -1,15 +1,20 @@
 package com.example.simpledictionary
 
+import android.app.SearchManager
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.ui.AppBarConfiguration
 import com.example.simpledictionary.databinding.ActivityMainBinding
-import com.google.android.material.snackbar.Snackbar
 
-class MainActivity : AppCompatActivity() {
+
+class DictionaryActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -25,9 +30,23 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.action.equals(Intent.ACTION_SEARCH)){
+             val searchQuery = intent?.getStringExtra(SearchManager.QUERY)?: ""
+            Log.d("MainActivity", "searchQuery = $searchQuery")
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
+
+        val searchItem: MenuItem? = menu.findItem(R.id.action_search)
+        val searchView: SearchView? = searchItem?.actionView as SearchView?
+
+        val searchManager: SearchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        searchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+
         return true
     }
 

@@ -34,7 +34,7 @@ class DictionaryActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         if (intent?.action.equals(Intent.ACTION_SEARCH)){
              val searchQuery = intent?.getStringExtra(SearchManager.QUERY)?: ""
-            Log.d("MainActivity", "searchQuery = $searchQuery")
+            Log.d("DictionaryActivity", "searchQuery = $searchQuery")
         }
     }
 

@@ -32,8 +32,8 @@ class DictionaryActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        if (intent?.action.equals(Intent.ACTION_SEARCH)){
-             val searchQuery = intent?.getStringExtra(SearchManager.QUERY)?: ""
+        if (intent?.action.equals(Intent.ACTION_SEARCH)) {
+            val searchQuery = intent?.getStringExtra(SearchManager.QUERY) ?: ""
             Log.d("DictionaryActivity", "searchQuery = $searchQuery")
         }
     }

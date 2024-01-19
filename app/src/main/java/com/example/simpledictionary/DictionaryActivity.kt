@@ -34,7 +34,7 @@ class DictionaryActivity : AppCompatActivity() {
         supportActionBar?.setIcon(R.mipmap.ic_launcher)
 
         mDbHelper = DataBaseHelper(applicationContext)
-//        dbHelper.addSomeDummyWords()
+//        mDbHelper?.addSomeDummyWords()
 //        dbHelper.getWords()
         mSearchListAdapter = SearchListAdapter(applicationContext, mDbHelper!!.getWords())
         val lstWords = (findViewById<ListView>(R.id.lstWords))

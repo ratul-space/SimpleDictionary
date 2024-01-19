@@ -5,11 +5,10 @@ import android.provider.BaseColumns
 class DictionaryEntryContract: BaseColumns {
     private constructor()
     companion object{
-        val TABLE_NAME = "english_words"
-
-        val COLUMN_ID = BaseColumns._ID
-        val COLUMN_WORD = "word"
-        val COLUMN_TYPE = "type"
-        val COLUMN_MEANING = "meaning"
+        const val TABLE_NAME = "english_words"
+        const val COLUMN_ID = BaseColumns._ID
+        const val COLUMN_WORD = "word"
+        const val COLUMN_TYPE = "type"
+        const val COLUMN_MEANING = "meaning"
     }
 }

@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -16,6 +18,8 @@ import com.example.simpledictionary.databinding.ActivityMainBinding
 
 
 class DictionaryActivity : AppCompatActivity() {
+    var mDbHelper: DataBaseHelper? = null
+    var mSearchListAdapter: SearchListAdapter? = null
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -29,11 +33,28 @@ class DictionaryActivity : AppCompatActivity() {
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(binding.toolbar)
 
-        val dbHelper = DataBaseHelper(applicationContext)
-//        dbHelper.addMore()
+        mDbHelper = DataBaseHelper(applicationContext)
+//        dbHelper.addSomeDummyWords()
 //        dbHelper.getWords()
-    val lstWords = findViewById<ListView>(R.id.lstWords)
-    lstWords.adapter = SearchListAdapter(applicationContext, dbHelper.getWords())
+        mSearchListAdapter = SearchListAdapter(applicationContext, mDbHelper!!.getWords())
+        val lstWords = (findViewById<ListView>(R.id.lstWords))
+        lstWords.adapter = mSearchListAdapter
+
+        lstWords.setOnItemClickListener(object : AdapterView.OnItemClickListener {
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long,
+
+                ) {
+                Log.d("DictionaryActivity", "$parent\n $view\n $position\n $id")
+
+                val wordDetailIntent = Intent(applicationContext, WordDetailActivity::class.java)
+                wordDetailIntent.putExtra(WordDetailActivity.WORD_ID, "$id")
+                startActivity(wordDetailIntent)
+            }
+        })
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -41,18 +62,29 @@ class DictionaryActivity : AppCompatActivity() {
         if (intent?.action.equals(Intent.ACTION_SEARCH)) {
             val searchQuery = intent?.getStringExtra(SearchManager.QUERY) ?: ""
             Log.d("DictionaryActivity", "searchQuery = $searchQuery")
+            mSearchListAdapter?.changeCursor(mDbHelper!!.getWords(searchQuery))
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
 
-        val searchItem: MenuItem? = menu.findItem(R.id.action_search)
-        val searchView: SearchView? = searchItem?.actionView as SearchView?
-
+        val searchView: SearchView? = menu.findItem(R.id.action_search).actionView as? SearchView
         val searchManager: SearchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         searchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
 
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+
+                mSearchListAdapter?.changeCursor(mDbHelper!!.getWords(newText ?: ""))
+
+                return true
+            }
+        })
         return true
     }
 

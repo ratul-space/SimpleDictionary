@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.provider.UserDictionary.Words
 import android.util.Log
 
 class DataBaseHelper(private var mContext: Context) :
@@ -37,16 +38,21 @@ class DataBaseHelper(private var mContext: Context) :
         val contentValues = ContentValues()
         var id = 1
         for (word in dummyWords) {
-            contentValues.put(COLUMN_ID, 1)
-            contentValues.put(COLUMN_WORD, "a")
+            contentValues.put(COLUMN_ID, id)
+            contentValues.put(COLUMN_WORD, word)
             contentValues.put(COLUMN_TYPE, "noun")
-            contentValues.put(COLUMN_MEANING, "First letter of english alphabet")
+            contentValues.put(COLUMN_MEANING, "This is an english alphabet")
             this.writableDatabase.insert(TABLE_NAME, null, contentValues)
+            id++
         }
     }
 
-    fun getWords(): Cursor {
-        val cursor: Cursor = readableDatabase.rawQuery("select * from $TABLE_NAME", null)
+    fun getWords(wordsPrefix: String = ""): Cursor {
+        if (wordsPrefix.isBlank()) {
+            return readableDatabase.rawQuery("select * from $TABLE_NAME", null)
+        }else{
+            return readableDatabase.rawQuery("select * from $TABLE_NAME where word like '$wordsPrefix%'", null)
+        }
 
 //        while (cursor.moveToNext()){
 //            val id = cursor.getInt(0)
@@ -56,6 +62,5 @@ class DataBaseHelper(private var mContext: Context) :
 //
 //            Log.d("DictonaryActivity", "$id, $word, $type, $meaning")
 //        }
-        return cursor
     }
 }

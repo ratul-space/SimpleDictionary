@@ -4,18 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="16dp"
     tools:context=".WordDetailActivity">
 
     <TextView
         android:id="@+id/txtWord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
         tools:text="Word" />
 
     <TextView
         android:id="@+id/txtType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:textStyle="italic"
         tools:layout_editor_absoluteX="4dp"
         tools:layout_editor_absoluteY="33dp"
         tools:text="Type" />
@@ -24,6 +30,8 @@
         android:id="@+id/txtMeaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:textSize="18sp"
         tools:layout_editor_absoluteX="7dp"
         tools:layout_editor_absoluteY="86dp"
         tools:text="Meaning" />

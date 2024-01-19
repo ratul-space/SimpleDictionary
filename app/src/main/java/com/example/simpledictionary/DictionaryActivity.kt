@@ -32,6 +32,7 @@ class DictionaryActivity : AppCompatActivity() {
 
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(binding.toolbar)
+        supportActionBar?.setIcon(R.mipmap.ic_launcher)
 
         mDbHelper = DataBaseHelper(applicationContext)
 //        dbHelper.addSomeDummyWords()

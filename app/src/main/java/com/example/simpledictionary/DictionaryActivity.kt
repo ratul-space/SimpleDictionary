@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
@@ -28,6 +29,11 @@ class DictionaryActivity : AppCompatActivity() {
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(binding.toolbar)
 
+        val dbHelper = DataBaseHelper(applicationContext)
+//        dbHelper.addMore()
+//        dbHelper.getWords()
+    val lstWords = findViewById<ListView>(R.id.lstWords)
+    lstWords.adapter = SearchListAdapter(applicationContext, dbHelper.getWords())
     }
 
     override fun onNewIntent(intent: Intent?) {

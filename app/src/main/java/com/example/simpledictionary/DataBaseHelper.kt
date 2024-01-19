@@ -35,15 +35,14 @@ class DataBaseHelper(private var mContext: Context) :
     }
 
     fun addSomeDummyWords() {
-
-        val dummyWords = arrayOf("a", "apple", "b", "ball", "c", "cat", "d", "dog", "e", "engle")
+        val dummyWords = arrayOf("a", "apple", "b", "ball", "c", "cat", "d", "dog", "e", "orange")
         val contentValues = ContentValues()
         var id = 1
         for (word in dummyWords) {
-            contentValues.put(DictionaryEntryContract.COLUMN_ID, id)
-            contentValues.put(DictionaryEntryContract.COLUMN_WORD, word)
-            contentValues.put(DictionaryEntryContract.COLUMN_TYPE, "noun")
-            contentValues.put(DictionaryEntryContract.COLUMN_MEANING, "This is an english alphabet")
+            contentValues.put(COLUMN_ID, id)
+            contentValues.put(COLUMN_WORD, word)
+            contentValues.put(COLUMN_TYPE, "noun")
+            contentValues.put(COLUMN_MEANING, "This is an english alphabet")
             this.writableDatabase.insert(TABLE_NAME, null, contentValues)
             id++
         }
@@ -51,31 +50,31 @@ class DataBaseHelper(private var mContext: Context) :
 
     fun getWords(wordsPrefix: String = ""): Cursor {
         val columns = arrayOf(
-            DictionaryEntryContract.COLUMN_ID,
-            DictionaryEntryContract.COLUMN_WORD,
-            DictionaryEntryContract.COLUMN_TYPE,
-            DictionaryEntryContract.COLUMN_MEANING
+            COLUMN_ID,
+            COLUMN_WORD,
+            COLUMN_TYPE,
+            COLUMN_MEANING
         )
 
         if (wordsPrefix.isBlank()) {
             return readableDatabase.query(
-                DictionaryEntryContract.TABLE_NAME,
+                TABLE_NAME,
                 columns,
                 null,
                 null,
                 null,
                 null,
-                "${DictionaryEntryContract.COLUMN_WORD} ASC"
+                "$COLUMN_WORD ASC"
             )
         } else {
             return readableDatabase.query(
-                DictionaryEntryContract.TABLE_NAME,
+                TABLE_NAME,
                 columns,
-                "${DictionaryEntryContract.COLUMN_WORD} like ?",
+                "$COLUMN_WORD like ?",
                 arrayOf("$wordsPrefix%"),
                 null,
                 null,
-                "${DictionaryEntryContract.COLUMN_WORD} ASC"
+                "$COLUMN_WORD ASC"
             )
         }
     }
@@ -84,12 +83,11 @@ class DataBaseHelper(private var mContext: Context) :
         return readableDatabase.query(
             TABLE_NAME,
             null,
-            "${DictionaryEntryContract.COLUMN_ID} = ?",
+            "$COLUMN_ID = ?",
             arrayOf(id),
             null,
             null,
             null
         )
-//        return readableDatabase.rawQuery("select * from ${DictionaryEntryContract.TABLE_NAME} where ${DictionaryEntryContract.COLUMN_ID}=$id", null)
     }
 }

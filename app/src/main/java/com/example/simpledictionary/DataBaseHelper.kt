@@ -5,25 +5,17 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.provider.UserDictionary.Words
-import android.util.Log
+import com.example.simpledictionary.DictionaryEntryContract.Companion.TABLE_NAME
 
 class DataBaseHelper(private var mContext: Context) :
     SQLiteOpenHelper(mContext, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private val DATABASE_NAME = "simple_dict.db"
         private val DATABASE_VERSION = 1
-
-        val TABLE_NAME = "english_words"
-
-        val COLUMN_ID = "id"
-        val COLUMN_WORD = "word"
-        val COLUMN_TYPE = "type"
-        val COLUMN_MEANING = "meaning"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL("create table $TABLE_NAME($COLUMN_ID INT, $COLUMN_WORD TEXT, $COLUMN_TYPE TEXT, $COLUMN_MEANING TEXT)")
+        db?.execSQL("create table $TABLE_NAME(${DictionaryEntryContract.COLUMN_ID} INT, ${DictionaryEntryContract.COLUMN_WORD} TEXT, ${DictionaryEntryContract.COLUMN_TYPE} TEXT, ${DictionaryEntryContract.COLUMN_MEANING} TEXT)")
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -38,10 +30,10 @@ class DataBaseHelper(private var mContext: Context) :
         val contentValues = ContentValues()
         var id = 1
         for (word in dummyWords) {
-            contentValues.put(COLUMN_ID, id)
-            contentValues.put(COLUMN_WORD, word)
-            contentValues.put(COLUMN_TYPE, "noun")
-            contentValues.put(COLUMN_MEANING, "This is an english alphabet")
+            contentValues.put(DictionaryEntryContract.COLUMN_ID, id)
+            contentValues.put(DictionaryEntryContract.COLUMN_WORD, word)
+            contentValues.put(DictionaryEntryContract.COLUMN_TYPE, "noun")
+            contentValues.put(DictionaryEntryContract.COLUMN_MEANING, "This is an english alphabet")
             this.writableDatabase.insert(TABLE_NAME, null, contentValues)
             id++
         }
@@ -49,9 +41,29 @@ class DataBaseHelper(private var mContext: Context) :
 
     fun getWords(wordsPrefix: String = ""): Cursor {
         if (wordsPrefix.isBlank()) {
-            return readableDatabase.rawQuery("select * from $TABLE_NAME", null)
-        }else{
-            return readableDatabase.rawQuery("select * from $TABLE_NAME where word like '$wordsPrefix%'", null)
+            return readableDatabase.query(
+                TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "${DictionaryEntryContract.COLUMN_WORD} ASC"
+            )
+
+//            return readableDatabase.rawQuery("select * from ${DictionaryEntryContract.TABLE_NAME}", null)
+        } else {
+            return readableDatabase.query(
+                TABLE_NAME,
+                null,
+                "${DictionaryEntryContract.COLUMN_WORD} like ?",
+                arrayOf("$wordsPrefix%"),
+                null,
+                null,
+                "${DictionaryEntryContract.COLUMN_WORD} ASC"
+            )
+
+//            return readableDatabase.rawQuery("select * from ${DictionaryEntryContract.TABLE_NAME} where word like '$wordsPrefix%'", null)
         }
 
 //        while (cursor.moveToNext()){
@@ -62,5 +74,18 @@ class DataBaseHelper(private var mContext: Context) :
 //
 //            Log.d("DictonaryActivity", "$id, $word, $type, $meaning")
 //        }
+    }
+
+    fun getWord(id: String): Cursor {
+        return readableDatabase.query(
+            TABLE_NAME,
+            null,
+            "${DictionaryEntryContract.COLUMN_ID} = ?",
+            arrayOf("$id"),
+            null,
+            null,
+            null
+        )
+//        return readableDatabase.rawQuery("select * from ${DictionaryEntryContract.TABLE_NAME} where ${DictionaryEntryContract.COLUMN_ID}=$id", null)
     }
 }

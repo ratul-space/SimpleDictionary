@@ -2,9 +2,10 @@ package com.example.simpledictionary
 
 import android.provider.BaseColumns
 
-class DictionaryEntryContract: BaseColumns {
+class DictionaryEntryContract : BaseColumns {
     private constructor()
-    companion object{
+
+    companion object {
         const val TABLE_NAME = "english_words"
         const val COLUMN_ID = BaseColumns._ID
         const val COLUMN_WORD = "word"

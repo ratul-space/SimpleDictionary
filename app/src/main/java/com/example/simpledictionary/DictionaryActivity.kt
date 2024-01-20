@@ -55,7 +55,7 @@ class DictionaryActivity : AppCompatActivity() {
         if (intent?.action.equals(Intent.ACTION_SEARCH)) {
             val searchQuery = intent?.getStringExtra(SearchManager.QUERY) ?: ""
             Log.d("DictionaryActivity", "searchQuery = $searchQuery")
-            mSearchListAdapter?.changeCursor(mDbHelper!!.getWords(searchQuery))
+            updateListByQuery(searchQuery)
         }
     }
 
@@ -73,12 +73,16 @@ class DictionaryActivity : AppCompatActivity() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
 
-                mSearchListAdapter?.changeCursor(mDbHelper!!.getWords(newText ?: ""))
+                updateListByQuery(newText ?: "")
 
                 return true
             }
         })
         return true
+    }
+
+    private fun updateListByQuery(searchQuery: String) {
+        mSearchListAdapter?.changeCursor(mDbHelper!!.getWords(searchQuery))
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

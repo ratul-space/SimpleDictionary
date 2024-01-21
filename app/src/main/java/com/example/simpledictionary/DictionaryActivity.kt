@@ -2,10 +2,11 @@ package com.example.simpledictionary
 
 import android.app.SearchManager
 
-import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -16,6 +17,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.ui.AppBarConfiguration
 import com.example.simpledictionary.databinding.ActivityMainBinding
+import java.lang.ref.WeakReference
 
 
 class DictionaryActivity : AppCompatActivity() {
@@ -34,8 +36,12 @@ class DictionaryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mDbHelper = DataBaseHelper(applicationContext)
         mSearchQuery = savedInstanceState?.getString(LAST_SEARCH_WORD) ?: ""
-
-        showDictUI()
+        if (!isDbLoaded()) {
+            setContentView(R.layout.activity_dictionary_loading)
+//            Show db ui
+            LoadViewTask(this).execute()
+        } else
+            showDictUI()
     }
 
     private fun showDictUI() {
@@ -59,6 +65,11 @@ class DictionaryActivity : AppCompatActivity() {
                 wordDetailIntent.putExtra(WordDetailActivity.WORD_ID, "$id")
                 startActivity(wordDetailIntent)
             }
+    }
+
+    private fun isDbLoaded(): Boolean {
+        val shearedPref = PreferenceManager.getDefaultSharedPreferences(this)
+        return shearedPref.getBoolean(DataBaseHelper.DB_CREATED, false)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -124,4 +135,26 @@ class DictionaryActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    class LoadViewTask(activity: DictionaryActivity) : AsyncTask<Void, Void, Void>() {
+        private var mActivity = WeakReference<DictionaryActivity>(activity)
+        override fun doInBackground(vararg params: Void?): Void? {
+            if (getActivityInstance()?.mDbHelper?.readableDatabase?.isOpen == true) {
+
+            }
+
+            return null
+
+        }
+
+        override fun onPostExecute(result: Void?) {
+            if (getActivityInstance()?.isDbLoaded() == true) {
+                getActivityInstance()?.showDictUI()
+            }
+
+        }
+
+        private fun getActivityInstance() = mActivity.get()
+    }
+
 }

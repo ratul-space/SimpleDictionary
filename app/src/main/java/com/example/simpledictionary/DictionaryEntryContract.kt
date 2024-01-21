@@ -4,7 +4,6 @@ import android.provider.BaseColumns
 
 class DictionaryEntryContract : BaseColumns {
     private constructor()
-
     companion object {
         const val TABLE_NAME = "english_words"
         const val COLUMN_ID = BaseColumns._ID

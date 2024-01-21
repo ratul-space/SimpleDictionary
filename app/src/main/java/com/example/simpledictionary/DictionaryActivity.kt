@@ -1,6 +1,8 @@
 package com.example.simpledictionary
 
 import android.app.SearchManager
+
+import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -17,14 +19,27 @@ import com.example.simpledictionary.databinding.ActivityMainBinding
 
 
 class DictionaryActivity : AppCompatActivity() {
+    companion object {
+        val LAST_SEARCH_WORD: String = "LAST_SEARCH_WORD"
+    }
+
     var mDbHelper: DataBaseHelper? = null
     var mSearchListAdapter: SearchListAdapter? = null
+    var mSearchQuery: String = ""
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mDbHelper = DataBaseHelper(applicationContext)
+        mSearchQuery = savedInstanceState?.getString(LAST_SEARCH_WORD) ?: ""
+
+        showDictUI()
+    }
+
+    private fun showDictUI() {
+        setContentView(R.layout.activity_main)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -33,21 +48,27 @@ class DictionaryActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setIcon(R.mipmap.ic_launcher)
 
-        mDbHelper = DataBaseHelper(applicationContext)
-//        mDbHelper?.addSomeDummyWords()
-//        dbHelper.getWords()
-        mSearchListAdapter = SearchListAdapter(applicationContext, mDbHelper!!.getWords())
-        val lstWords = (findViewById<ListView>(R.id.lstWords))
+        mSearchListAdapter =
+            SearchListAdapter(applicationContext, mDbHelper!!.getWords(mSearchQuery))
+        val lstWords = findViewById<ListView>(R.id.lstWords)
         lstWords.adapter = mSearchListAdapter
 
         lstWords.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
-                Log.d("DictionaryActivity", "$parent\n $view\n $position\n $id")
-
                 val wordDetailIntent = Intent(applicationContext, WordDetailActivity::class.java)
                 wordDetailIntent.putExtra(WordDetailActivity.WORD_ID, "$id")
                 startActivity(wordDetailIntent)
             }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState?.putString(LAST_SEARCH_WORD, mSearchQuery)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        mSearchQuery = savedInstanceState?.getString(LAST_SEARCH_WORD) ?: ""
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -55,6 +76,7 @@ class DictionaryActivity : AppCompatActivity() {
         if (intent?.action.equals(Intent.ACTION_SEARCH)) {
             val searchQuery = intent?.getStringExtra(SearchManager.QUERY) ?: ""
             Log.d("DictionaryActivity", "searchQuery = $searchQuery")
+//            mSearchListAdapter?.changeCursor(mDbHelper!!.getWords(searchQuery))
             updateListByQuery(searchQuery)
         }
     }
@@ -66,12 +88,15 @@ class DictionaryActivity : AppCompatActivity() {
         val searchManager: SearchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         searchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
 
+
+
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+//                mSearchListAdapter?.changeCursor(mDbHelper!!.getWords(newText?: ""))
 
                 updateListByQuery(newText ?: "")
 
@@ -82,6 +107,7 @@ class DictionaryActivity : AppCompatActivity() {
     }
 
     private fun updateListByQuery(searchQuery: String) {
+        mSearchQuery = searchQuery
         mSearchListAdapter?.changeCursor(mDbHelper!!.getWords(searchQuery))
     }
 

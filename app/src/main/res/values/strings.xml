@@ -45,4 +45,5 @@
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
     <string name="action_search">Search\n</string>
+    <string name="dictionary_db_loading">Preparing database</string>
 </resources>
